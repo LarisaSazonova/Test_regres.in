@@ -1,5 +1,6 @@
 import requests
 import pytest
+from email_validate import validate
 
 @pytest.fixture
 def expected_result():
@@ -71,6 +72,16 @@ def test_get_list_of_users_to_have_correct_response_body(expected_result):
     response = requests.get("https://reqres.in/api/users?page=2")
     response_body = response.json()
     assert response_body == expected_result, "Response body is not as expected according spec"
+
+
+def test_list_of_users_to_have_valide_emails():
+    response = requests.get("https://reqres.in/api/users?page=2")
+    response_body = response.json()
+
+    for user in response_body["data"]:
+        print(user["email"])
+        assert validate(user["email"], check_smtp=False)
+        
 
 def test_created_user_is_in_response_body():
     response = requests.post("https://reqres.in/api/users", data = request_body)
